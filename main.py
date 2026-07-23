@@ -6,7 +6,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from models.schemas import ChatRequest, ChatResponse
 from orchestrator import run_rag_pipeline
 
-app = FastAPI(title="Book RAG Chat API")
+app = FastAPI(
+    title="Book RAG Chat API",
+    description="API Chat RAG hỏi đáp sách dành cho Android App & Web Client",
+    version="1.0.0",
+)
 
 # Cấu hình CORS để cho phép ứng dụng Android / Web truy cập
 app.add_middleware(
@@ -20,8 +24,16 @@ app.add_middleware(
 
 @app.post("/chat", response_model=ChatResponse)
 def chat(request: ChatRequest):
+    """
+    Endpoint nhận query và book_id từ Android App.
+    Server tự động truy xuất (RAG pipeline), gọi tool, tổng hợp ngữ cảnh và trả về câu trả lời.
+    """
     try:
-        history = [{"role": m.role, "content": m.content} for m in request.chat_history]
+        history = (
+            [{"role": m.role, "content": m.content} for m in request.chat_history]
+            if request.chat_history
+            else []
+        )
         result = run_rag_pipeline(
             book_id=request.book_id,
             query=request.query,
