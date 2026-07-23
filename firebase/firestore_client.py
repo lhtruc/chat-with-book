@@ -78,14 +78,21 @@ def _load_local_chunks() -> dict:
         return _local_chunks_cache
 
     candidates = [
+        os.path.join(config.DATA_DIR, "processed_chunks.json.gz"),
         os.path.join(config.DATA_DIR, "processed_chunks.json"),
+        "processed_chunks.json.gz",
         "processed_chunks.json",
     ]
     for p in candidates:
         if os.path.exists(p):
             try:
-                with open(p, "r", encoding="utf-8") as f:
-                    _local_chunks_cache = json.load(f)
+                if p.endswith(".gz"):
+                    import gzip
+                    with gzip.open(p, "rt", encoding="utf-8") as f:
+                        _local_chunks_cache = json.load(f)
+                else:
+                    with open(p, "r", encoding="utf-8") as f:
+                        _local_chunks_cache = json.load(f)
                 return _local_chunks_cache
             except Exception:
                 pass
