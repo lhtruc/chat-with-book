@@ -77,8 +77,21 @@ def _load_local_chunks() -> dict:
     if _local_chunks_cache is not None:
         return _local_chunks_cache
 
+    target_gz_path = os.path.join(config.DATA_DIR, "processed_chunks.json.gz")
+
+    # Nếu chưa có file data local và có URL Cloud Storage, tự động tải về
+    if not os.path.exists(target_gz_path) and config.CHUNKS_DOWNLOAD_URL:
+        try:
+            import urllib.request
+            os.makedirs(config.DATA_DIR, exist_ok=True)
+            print(f"📥 [Cloud Storage] Đang tải data từ {config.CHUNKS_DOWNLOAD_URL} ...")
+            urllib.request.urlretrieve(config.CHUNKS_DOWNLOAD_URL, target_gz_path)
+            print("✅ Tải data từ Cloud Storage hoàn tất!")
+        except Exception as e:
+            print(f"❌ Lỗi tải data từ Cloud Storage: {e}")
+
     candidates = [
-        os.path.join(config.DATA_DIR, "processed_chunks.json.gz"),
+        target_gz_path,
         os.path.join(config.DATA_DIR, "processed_chunks.json"),
         "processed_chunks.json.gz",
         "processed_chunks.json",
@@ -223,11 +236,24 @@ def query_books_by_genre(
 # ─────────── CHAPTER SUMMARIES ───────────────────────────────────────────────
 
 def get_chapter_summary(book_id: str, chapter_number: int) -> Optional[str]:
+    # 1. Check local cache / local files
     local = _load_local_summaries()
     doc_id = f"{book_id}_ch{chapter_number}"
     if local and doc_id in local:
         return local[doc_id].get("summary")
 
+    # 2. Check Supabase
+    try:
+        from supabase_client import get_supabase_client
+        sp = get_supabase_client()
+        if sp:
+            res = sp.table("book_chapter_summaries").select("summary").eq("id", doc_id).execute()
+            if res.data and len(res.data) > 0:
+                return res.data[0].get("summary")
+    except Exception:
+        pass
+
+    # 3. Fallback Firestore
     try:
         doc = get_db().collection("book_chapter_summaries").document(doc_id).get()
         if doc.exists:
@@ -244,6 +270,21 @@ def save_chapter_summary(
     chapter_title: str = "",
 ):
     doc_id = f"{book_id}_ch{chapter_number}"
+    # Save to Supabase if available
+    try:
+        from supabase_client import get_supabase_client
+        sp = get_supabase_client()
+        if sp:
+            sp.table("book_chapter_summaries").upsert({
+                "id": doc_id,
+                "book_id": book_id,
+                "chapter_number": chapter_number,
+                "chapter_title": chapter_title,
+                "summary": summary,
+            }).execute()
+    except Exception:
+        pass
+
     try:
         get_db().collection("book_chapter_summaries").document(doc_id).set({
             "book_id": book_id,
@@ -256,12 +297,32 @@ def save_chapter_summary(
 
 
 def get_all_chapter_summaries(book_id: str) -> list[dict]:
+    # 1. Check local cache / local files
     local = _load_local_summaries()
     if local:
         results = [v for v in local.values() if v.get("book_id") == book_id]
-        results.sort(key=lambda x: x.get("chapter_number", 0))
-        return results
+        if results:
+            results.sort(key=lambda x: x.get("chapter_number", 0))
+            return results
 
+    # 2. Check Supabase
+    try:
+        from supabase_client import get_supabase_client
+        sp = get_supabase_client()
+        if sp:
+            res = (
+                sp.table("book_chapter_summaries")
+                .select("*")
+                .eq("book_id", book_id)
+                .order("chapter_number", desc=False)
+                .execute()
+            )
+            if res.data:
+                return res.data
+    except Exception:
+        pass
+
+    # 3. Fallback Firestore
     try:
         docs = (
             get_db()

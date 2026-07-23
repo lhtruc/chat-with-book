@@ -15,6 +15,12 @@ DEEPSEEK_BASE_URL = os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com")
 
 # --- Data & Directory ---
 DATA_DIR = os.getenv("DATA_DIR", "data")
+CHUNKS_DOWNLOAD_URL = os.getenv("CHUNKS_DOWNLOAD_URL", "")
+
+# --- Supabase Vector DB ---
+SUPABASE_URL = os.getenv("SUPABASE_URL", "")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY", "")
+SUPABASE_SERVICE_KEY = os.getenv("SUPABASE_SERVICE_KEY", os.getenv("SUPABASE_KEY", ""))
 
 # --- Firebase ---
 FIREBASE_CREDENTIALS_PATH = os.getenv(
