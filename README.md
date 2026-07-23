@@ -1,3 +1,14 @@
+---
+title: Book RAG Chat API
+emoji: 📚
+colorFrom: blue
+colorTo: indigo
+sdk: gradio
+sdk_version: 4.44.0
+app_file: app.py
+pinned: false
+---
+
 # Book RAG Chat — backend cho "chat with book"
 
 Backend Python (FastAPI) dùng Groq tool-calling làm router truy xuất, kết
