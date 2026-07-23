@@ -81,10 +81,10 @@ st.markdown(
 @st.cache_data
 def load_available_books():
     """Tự động load danh sách sách từ backup.json hoặc Firestore."""
+    data_dir = getattr(config, "DATA_DIR", "data")
     backup_paths = [
-        r"d:\hcmute\y3_s2_t2\mobile\final\data\backup.json",
-        os.path.join("..", "data", "backup.json"),
-        os.path.join("data", "backup.json"),
+        os.path.join(data_dir, "backup.json"),
+        os.path.join("..", data_dir, "backup.json"),
         "backup.json",
     ]
     for path in backup_paths:

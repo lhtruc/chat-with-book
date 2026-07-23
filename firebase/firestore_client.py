@@ -29,13 +29,17 @@ _local_summaries_cache = None
 def get_db():
     global _app, _db
     if _db is None:
-        import os
+        cred_json_str = config.FIREBASE_CREDENTIALS_JSON
         cred_path = config.FIREBASE_CREDENTIALS_PATH
-        if cred_path and os.path.exists(cred_path):
+        if cred_json_str:
+            cred_dict = json.loads(cred_json_str)
+            cred = credentials.Certificate(cred_dict)
+            _app = firebase_admin.initialize_app(cred)
+        elif cred_path and os.path.exists(cred_path):
             cred = credentials.Certificate(cred_path)
             _app = firebase_admin.initialize_app(cred)
         else:
-            # Fallback to Application Default Credentials for Cloud Run
+            # Fallback to Application Default Credentials for Cloud Run / GCP
             _app = firebase_admin.initialize_app()
         _db = firestore.client()
     return _db
@@ -49,10 +53,9 @@ def _load_local_books() -> dict:
         return _local_books_cache
 
     candidates = [
-        r"d:\hcmute\y3_s2_t2\mobile\final\data\backup.json",
-        os.path.join("..", "data", "backup.json"),
-        os.path.join("data", "backup.json"),
-        os.path.join("data", "books_export.json"),
+        os.path.join(config.DATA_DIR, "backup.json"),
+        os.path.join(config.DATA_DIR, "books_export.json"),
+        os.path.join("..", config.DATA_DIR, "backup.json"),
         "backup.json",
     ]
     for p in candidates:
@@ -75,8 +78,7 @@ def _load_local_chunks() -> dict:
         return _local_chunks_cache
 
     candidates = [
-        os.path.join("data", "processed_chunks.json"),
-        r"d:\hcmute\y3_s2_t2\mobile\final\chat-with-book\book_rag\data\processed_chunks.json",
+        os.path.join(config.DATA_DIR, "processed_chunks.json"),
         "processed_chunks.json",
     ]
     for p in candidates:
@@ -98,8 +100,7 @@ def _load_local_summaries() -> dict:
         return _local_summaries_cache
 
     candidates = [
-        os.path.join("data", "processed_summaries.json"),
-        r"d:\hcmute\y3_s2_t2\mobile\final\chat-with-book\book_rag\data\processed_summaries.json",
+        os.path.join(config.DATA_DIR, "processed_summaries.json"),
         "processed_summaries.json",
     ]
     for p in candidates:

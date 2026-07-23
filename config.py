@@ -13,10 +13,14 @@ DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
 DEEPSEEK_MODEL = os.getenv("DEEPSEEK_MODEL", "deepseek-v4-flash")
 DEEPSEEK_BASE_URL = os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com")
 
+# --- Data & Directory ---
+DATA_DIR = os.getenv("DATA_DIR", "data")
+
 # --- Firebase ---
 FIREBASE_CREDENTIALS_PATH = os.getenv(
     "FIREBASE_CREDENTIALS_PATH", "firebase_credentials.json"
 )
+FIREBASE_CREDENTIALS_JSON = os.getenv("FIREBASE_CREDENTIALS_JSON")
 
 # --- Embedding (chạy local, không tốn API call) ---
 # Model multilingual để hoạt động tốt cả với sách tiếng Anh lẫn tiếng Việt

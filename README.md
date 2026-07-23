@@ -163,9 +163,27 @@ book_rag/
 
 ## 7. Firestore collections
 
-| Collection | Quyền | Mô tả |
-|---|---|---|
-| `books` | **READ ONLY** | Metadata sách + mảng `chapters` (nội dung chương) |
-| `users` | **KHÔNG ĐỤNG** | Dữ liệu người dùng |
-| `book_chunks` | **ADD NEW** | Chunk + embedding vector (sinh bởi ingest) |
-| `book_chapter_summaries` | **ADD NEW** | Tóm tắt chương (sinh bởi Groq lúc ingest) |
+## 8. Hướng dẫn Deploy Backend lên Railway
+
+### Bước 1: Chuẩn bị Repository
+Push code lên GitHub (file `data/processed_chunks.json` ~465MB đã được `.gitignore` chặn tự động để repo luôn nhẹ).
+
+### Bước 2: Tạo Service trên Railway
+1. Vào [Railway.app](https://railway.app/) → **New Project** → **Deploy from GitHub repo** → Chọn repository `book_rag`.
+2. Railway sẽ tự động phát hiện `Dockerfile` và build container.
+
+### Bước 3: Tạo Volume & Upload Data
+1. Tại tab **Variables / Volumes** của dịch vụ trên Railway, chọn **Add Volume** và mount vào đường dẫn `/app/data`.
+2. Dùng Railway CLI hoặc upload dữ liệu từ máy nhà lên Volume `/app/data`:
+   - `backup.json`
+   - `processed_chunks.json`
+   - `processed_summaries.json`
+
+### Bước 4: Cấu hình Environment Variables trên Railway
+Thêm các biến môi trường sau trong tab **Variables** trên Railway Dashboard:
+- `GROQ_API_KEY`: Key Groq của bạn
+- `DEEPSEEK_API_KEY`: Key DeepSeek của bạn
+- `FIREBASE_CREDENTIALS_JSON`: Paste toàn bộ nội dung chuỗi JSON trong file `firebase_credentials.json`
+- `DATA_DIR`: `data` (hoặc `/app/data`)
+- `PORT`: `8080` (hoặc để Railway cấp cổng động)
+

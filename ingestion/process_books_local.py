@@ -20,11 +20,13 @@ from ingestion.embedder import embed_batch
 from ingestion.chapter_summarizer import summarize_chapter
 
 
+import config
+
 def find_backup_file() -> str:
+    data_dir = getattr(config, "DATA_DIR", "data")
     candidates = [
-        r"d:\hcmute\y3_s2_t2\mobile\final\data\backup.json",
-        os.path.join("..", "data", "backup.json"),
-        os.path.join("data", "backup.json"),
+        os.path.join(data_dir, "backup.json"),
+        os.path.join("..", data_dir, "backup.json"),
         "backup.json",
     ]
     for c in candidates:
@@ -33,8 +35,8 @@ def find_backup_file() -> str:
     return ""
 
 
-CHUNKS_FILE = os.path.join("data", "processed_chunks.json")
-SUMMARIES_FILE = os.path.join("data", "processed_summaries.json")
+CHUNKS_FILE = os.path.join(getattr(config, "DATA_DIR", "data"), "processed_chunks.json")
+SUMMARIES_FILE = os.path.join(getattr(config, "DATA_DIR", "data"), "processed_summaries.json")
 
 
 def load_json(path: str) -> dict:
