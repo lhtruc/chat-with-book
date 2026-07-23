@@ -29,15 +29,10 @@ def chat(request: ChatRequest):
     Server tự động truy xuất (RAG pipeline), gọi tool, tổng hợp ngữ cảnh và trả về câu trả lời.
     """
     try:
-        history = (
-            [{"role": m.role, "content": m.content} for m in request.chat_history]
-            if request.chat_history
-            else []
-        )
         result = run_rag_pipeline(
             book_id=request.book_id,
             query=request.query,
-            chat_history=history,
+            chat_history=[],
             llm_provider=request.llm_provider or "deepseek",
         )
         return ChatResponse(**result)

@@ -2,15 +2,9 @@ from typing import List, Optional
 from pydantic import BaseModel, Field
 
 
-class ChatMessage(BaseModel):
-    role: str  # "user" | "assistant"
-    content: str
-
-
 class ChatRequest(BaseModel):
     book_id: str
     query: str
-    chat_history: List[ChatMessage] = Field(default_factory=list)
     llm_provider: Optional[str] = "deepseek"
 
 
