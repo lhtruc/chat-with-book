@@ -35,7 +35,13 @@ def hybrid_search(book_id: str, query: str, top_k: int = None) -> dict:
         emb = c.get("embedding")
         vec_score = 0.0
         if emb:
-            emb_arr = np.array(emb)
+            if isinstance(emb, str):
+                import json
+                try:
+                    emb = json.loads(emb)
+                except Exception:
+                    emb = [float(x.strip()) for x in emb.strip("[]").split(",") if x.strip()]
+            emb_arr = np.array(emb, dtype=float)
             denom = np.linalg.norm(query_vec) * np.linalg.norm(emb_arr)
             vec_score = float(np.dot(query_vec, emb_arr) / denom) if denom else 0.0
 

@@ -178,6 +178,31 @@ def get_all_chapter_summaries(book_id: str) -> List[Dict[str, Any]]:
         return []
 
 
+import json
+
+
+def _parse_embedding(emb: Any) -> Optional[List[float]]:
+    """Chuyển đổi embedding từ dạng string/json/list về list[float] an toàn."""
+    if not emb:
+        return None
+    if isinstance(emb, list):
+        return [float(x) for x in emb]
+    if isinstance(emb, str):
+        try:
+            parsed = json.loads(emb)
+            if isinstance(parsed, list):
+                return [float(x) for x in parsed]
+        except Exception:
+            pass
+        try:
+            cleaned = emb.strip("[]\n\r ")
+            if cleaned:
+                return [float(x.strip()) for x in cleaned.split(",") if x.strip()]
+        except Exception:
+            pass
+    return None
+
+
 def get_all_chunks(book_id: str) -> List[Dict[str, Any]]:
     """Lấy tất cả chunks của sách từ bảng `book_chunks` (dùng cho fallback hybrid BM25/cosine search)."""
     client = get_supabase_client()
@@ -199,7 +224,7 @@ def get_all_chunks(book_id: str) -> List[Dict[str, Any]]:
                 "chapter_number": item.get("chapter_number"),
                 "chunk_index": item.get("chunk_index"),
                 "text": item.get("content"),
-                "embedding": item.get("embedding"),
+                "embedding": _parse_embedding(item.get("embedding")),
             })
         return chunks
     except Exception as e:
