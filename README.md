@@ -174,27 +174,35 @@ book_rag/
 
 ## 7. Firestore collections
 
-## 8. Hướng dẫn Deploy Backend lên Railway
+## 8. Hướng dẫn Deploy Backend lên Google Cloud Run (Free Tier 2GB RAM / 2 Triệu Request)
 
-### Bước 1: Chuẩn bị Repository
-Push code lên GitHub (file `data/processed_chunks.json` ~465MB đã được `.gitignore` chặn tự động để repo luôn nhẹ).
+### Bước 1: Chuẩn bị Cài đặt Google Cloud SDK (gcloud CLI)
+1. Tải và cài đặt [Google Cloud SDK](https://cloud.google.com/sdk/docs/install).
+2. Đăng nhập tài khoản Google:
+   ```bash
+   gcloud auth login
+   gcloud config set project <PROJECT_ID_CUA_BAN>
+   ```
 
-### Bước 2: Tạo Service trên Railway
-1. Vào [Railway.app](https://railway.app/) → **New Project** → **Deploy from GitHub repo** → Chọn repository `book_rag`.
-2. Railway sẽ tự động phát hiện `Dockerfile` và build container.
+### Bước 2: Deploy ứng dụng trực tiếp từ thư mục `book_rag`
+Chạy duy nhất 1 lệnh từ thư mục `book_rag` để Google Cloud tự động build Docker Image và deploy container với 2GB RAM:
 
-### Bước 3: Tạo Volume & Upload Data
-1. Tại tab **Variables / Volumes** của dịch vụ trên Railway, chọn **Add Volume** và mount vào đường dẫn `/app/data`.
-2. Dùng Railway CLI hoặc upload dữ liệu từ máy nhà lên Volume `/app/data`:
-   - `backup.json`
-   - `processed_chunks.json`
-   - `processed_summaries.json`
+```bash
+gcloud run deploy book-rag-backend \
+  --source . \
+  --platform managed \
+  --region asia-east1 \
+  --allow-unauthenticated \
+  --memory 2Gi \
+  --cpu 2 \
+  --set-env-vars GROQ_API_KEY="gsk_...",DEEPSEEK_API_KEY="sk-...",DATA_DIR="data"
+```
 
-### Bước 4: Cấu hình Environment Variables trên Railway
-Thêm các biến môi trường sau trong tab **Variables** trên Railway Dashboard:
-- `GROQ_API_KEY`: Key Groq của bạn
-- `DEEPSEEK_API_KEY`: Key DeepSeek của bạn
-- `FIREBASE_CREDENTIALS_JSON`: Paste toàn bộ nội dung chuỗi JSON trong file `firebase_credentials.json`
-- `DATA_DIR`: `data` (hoặc `/app/data`)
-- `PORT`: `8080` (hoặc để Railway cấp cổng động)
+*(Lưu ý: Thay giá trị API Keys và bổ sung `FIREBASE_CREDENTIALS_JSON` trong phần cấu hình Variables trên giao diện GCP Console).*
+
+### Bước 3: Lấy Link API Public cho Android App
+Sau khi lệnh deploy hoàn tất (1-2 phút), Cloud Run sẽ in ra Service URL dạng:
+👉 **`https://book-rag-backend-xxxx-de.a.run.app/chat`**
+
+Gắn link này vào App Android của bạn và bạn bè để hỏi đáp 24/7 hoàn toàn 0đ!
 

@@ -11,6 +11,5 @@ __pycache__/
 .pytest_cache/
 .vscode/
 .idea/
-data/
-backup.json
+data/processed_chunks.json
 firebase_credentials.json
