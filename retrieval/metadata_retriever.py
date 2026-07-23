@@ -1,4 +1,4 @@
-from firebase.firestore_client import get_book, count_chapters
+from supabase_db import get_book, count_chapters
 
 def get_book_metadata(book_id: str) -> dict:
     book = get_book(book_id)

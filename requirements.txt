@@ -2,7 +2,6 @@ fastapi
 uvicorn[standard]
 groq
 openai
-firebase-admin
 sentence-transformers
 numpy
 rank_bm25

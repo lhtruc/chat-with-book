@@ -11,7 +11,7 @@ from retrieval.hybrid_retriever import hybrid_search
 from retrieval.metadata_retriever import get_book_metadata
 from retrieval.overview_retriever import get_book_overview
 from context_builder import build_context_from_chunks
-from firebase.firestore_client import get_book_language
+from supabase_db import get_book_language
 
 
 def run_rag_pipeline(

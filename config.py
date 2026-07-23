@@ -22,12 +22,6 @@ SUPABASE_URL = os.getenv("SUPABASE_URL", "")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY", "")
 SUPABASE_SERVICE_KEY = os.getenv("SUPABASE_SERVICE_KEY", os.getenv("SUPABASE_KEY", ""))
 
-# --- Firebase ---
-FIREBASE_CREDENTIALS_PATH = os.getenv(
-    "FIREBASE_CREDENTIALS_PATH", "firebase_credentials.json"
-)
-FIREBASE_CREDENTIALS_JSON = os.getenv("FIREBASE_CREDENTIALS_JSON")
-
 # --- Embedding (chạy local, không tốn API call) ---
 # Model multilingual để hoạt động tốt cả với sách tiếng Anh lẫn tiếng Việt
 EMBEDDING_MODEL_NAME = os.getenv(

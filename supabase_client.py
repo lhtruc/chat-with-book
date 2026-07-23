@@ -10,11 +10,11 @@ _supabase_admin_client: Optional[Client] = None
 
 
 def get_supabase_client() -> Optional[Client]:
-    """Lấy Supabase client chính (sử dụng SUPABASE_KEY / anon key)."""
+    """Lấy Supabase client chính (sử dụng SUPABASE_SERVICE_KEY hoặc SUPABASE_KEY)."""
     global _supabase_client
     if _supabase_client is None:
         url = config.SUPABASE_URL
-        key = config.SUPABASE_KEY
+        key = config.SUPABASE_SERVICE_KEY or config.SUPABASE_KEY
         if url and key:
             try:
                 _supabase_client = create_client(url, key)

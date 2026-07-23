@@ -8,7 +8,7 @@ import numpy as np
 from rank_bm25 import BM25Okapi
 
 import config
-from firebase.firestore_client import get_all_chunks
+from supabase_db import get_all_chunks
 from ingestion.embedder import embed_text
 
 

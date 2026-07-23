@@ -5,7 +5,7 @@ Chapter lookup: dùng cho câu hỏi kiểu "chương 3 nói về điều gì".
 (READ ONLY — không sửa collection books).  Nếu đã có summary được sinh sẵn
 trong collection `book_chapter_summaries` thì ưu tiên dùng summary.
 """
-from firebase.firestore_client import get_chapter, get_chapter_summary
+from supabase_db import get_chapter, get_chapter_summary
 
 
 def _extract_text(chapter: dict) -> str:

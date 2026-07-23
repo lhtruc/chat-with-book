@@ -1,6 +1,15 @@
 """
 Sinh embedding local bằng sentence-transformers (GPU/CUDA batched inference)
 """
+import sys
+from unittest.mock import MagicMock
+try:
+    import soundfile
+except Exception:
+    mock_sf = MagicMock()
+    mock_sf.__spec__ = MagicMock()
+    sys.modules["soundfile"] = mock_sf
+
 import torch
 from sentence_transformers import SentenceTransformer
 

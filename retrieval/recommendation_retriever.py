@@ -3,7 +3,7 @@ Recommendation: dùng cho câu hỏi kiểu "tôi nên đọc sách gì tiếp t
 Chỉ query metadata (genres, rating) trong collection `books`, không đụng
 tới nội dung/embedding của sách.
 """
-from firebase.firestore_client import query_books_by_genre
+from supabase_db import query_books_by_genre
 
 
 def recommend_books(book_id: str, genres: list[str]) -> dict:

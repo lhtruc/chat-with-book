@@ -5,7 +5,7 @@ Semantic search: dùng cho câu hỏi kiểu "sách này nói gì về tiền".
 import numpy as np
 
 import config
-from firebase.firestore_client import get_all_chunks
+from supabase_db import get_all_chunks
 from ingestion.embedder import embed_text
 from supabase_client import get_supabase_client
 
